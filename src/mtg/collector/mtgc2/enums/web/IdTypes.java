@@ -8,11 +8,7 @@ package mtg.collector.mtgc2.enums.web;
 public enum IdTypes {
 
     nameRow( "_nameRow\"" ),
-    manaRow( "_manaRow\"" ),
-    typeRow( "_typeRow\"" ),
-    rulesRow( "_textRow\"" ),
-    ptRow( "_ptRow\"" ),
-    rarityRow( "_rarityRow\"" );
+    typeRow( "_typeRow\"" );
     private String idType;
 
     private IdTypes( String idType ) {

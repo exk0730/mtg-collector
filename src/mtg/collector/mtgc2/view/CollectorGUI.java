@@ -29,7 +29,7 @@ import mtg.collector.mtgc2.importing.MTGImporter;
  * === Version 2.1 of MTGC ===
  * I have decided to strip almost of the Web functionality out of the program. It is difficult to understand
  * what the code is really doing, so I see no point in keeping most of the HTML parsing. Instead, the database
- * will ONLY consist of: Card name, card image link, and quantity. I feel that this is a reasonable solution,
+ * will ONLY consist of: Card name, card image link, card type, and quantity. I feel that this is a reasonable solution,
  * since it will strip out most of the complicated code (trying to find the card power/toughness, mana cost, etc).
  * I have decided to deprecate or comment all functions/methods that deal with anything other than the
  * above-mentioned attributes of a Card object. This also means changing the XML schema. I will keep a copy

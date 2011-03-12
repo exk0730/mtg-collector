@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import mtg.collector.mtgc2.utilities.DeckUtilities;
+import mtg.collector.mtgc2.utilities.DeckUtils;
 import mtg.collector.mtgc2.controller.MTGDecksController;
 import mtg.collector.mtgc2.fileIO.MTGFileIO;
 import mtg.collector.mtgc2.model.MTGDecksModel;
@@ -52,7 +52,7 @@ public class DeckManager extends AbstractMTGView {
         controller = new MTGDecksController();
         controller.addView( this );
         controller.addModel( m );
-        controller.changeElementDeckList( DeckUtilities.returnDeckJList() );
+        controller.changeElementDeckList( DeckUtils.returnDeckJList() );
     }
 
     @Override
@@ -73,7 +73,7 @@ public class DeckManager extends AbstractMTGView {
             jlDeckCardCount.setText( "Total cards: " + (Integer) evt.getNewValue() );
 
         } else if( evt.getPropertyName().equals( MTGDecksController.ELEMENT_OUTPUT_TEXT_PROPERTY ) ) {
-            DeckUtilities.outputTextFile( evt.getNewValue(), this );
+            DeckUtils.outputTextFile( evt.getNewValue(), this );
 
         } else if( evt.getPropertyName().equals( MTGDecksController.ELEMENT_DELETE_DECK_PROPERTY ) ) {
             if( JOptionPane.showConfirmDialog( this, "Do you really want to delete " + selectedDeck.getDeckName() + "?" )
@@ -106,7 +106,7 @@ public class DeckManager extends AbstractMTGView {
     private void delete( String deckName ) {
         MTGFileIO.instance().deleteDeck( selectedDeck );
         JOptionPane.showMessageDialog( this, "Successfully deleted " + deckName );
-        controller.changeElementDeckList( DeckUtilities.returnDeckJList() );
+        controller.changeElementDeckList( DeckUtils.returnDeckJList() );
     }
 
     private void delete( String deckName, String cardName ) {
@@ -132,7 +132,7 @@ public class DeckManager extends AbstractMTGView {
 
             public void valueChanged( ListSelectionEvent e ) {
                 if( !e.getValueIsAdjusting() ) {
-                    selectedDeck = DeckUtilities.getDeckObj( (String) list.getSelectedValue() );
+                    selectedDeck = DeckUtils.getDeckObj( (String) list.getSelectedValue() );
                 }
             }
         } );
@@ -192,7 +192,7 @@ public class DeckManager extends AbstractMTGView {
     private JList getCardList() {
         String dName = getSelectedDeck();
         if( dName != null ) {
-            return DeckUtilities.returnCardJList( dName, controller );
+            return DeckUtils.returnCardJList( dName, controller );
         } else {
             return null;
         }
