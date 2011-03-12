@@ -7,13 +7,9 @@ package mtg.collector.mtgc2.enums.web;
 public enum ClassTypes {
 
     leftCol( "\"leftCol\"" ),
-    cardInfo( "\"cardInfo\"" ),
     cardTitle( "\"cardTitle\"" ),
-    manaCost( "\"manaCost\"" ),
     typeLine( "\"typeLine\"" ),
     textBox( "\"cardtextbox\"" ),
-    rulesText( "\"rulesText\"" ),
-    setVersions( "\"rightCol\"" ),
     cardItem( "\"cardItem " ),
     value( "\"value\"" );
     private String classType;

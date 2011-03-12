@@ -7,7 +7,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import mtg.collector.mtgc2.utilities.Utils;
+import mtg.collector.mtgc2.utilities.CardUtils;
+import mtg.collector.mtgc2.utilities.DeckUtils;
 import mtg.collector.xml.org.*;
 
 /**
@@ -41,7 +42,7 @@ public class MtgJAXBWriter {
     }
 
     public void writeDeck( Deck deck ) {
-        deck = Utils.sortDeck( deck );
+        deck = DeckUtils.sortDeck( deck );
         decks.getDeck().add( deck );
         File out = file;
         try {
@@ -61,14 +62,15 @@ public class MtgJAXBWriter {
         List<Deck> curDecks = decks.getDeck();
         int index = -1;
         for( int i = 0; i < curDecks.size(); i++ ) {
-            if( Utils.equals( deck, curDecks.get( i ) ) ) {
+            if( DeckUtils.equals( deck, curDecks.get( i ) ) ) {
                 index = i;
+                break;
             }
         }
         if( index == -1 ) {
             return;
         }
-        decks.getDeck().remove( index );
+        decks.getDeck().remove( decks.getDeck().get( index ) );
         File out = file;
         try {
             constructMarshaller().marshal( decks, out );
@@ -83,15 +85,16 @@ public class MtgJAXBWriter {
         List<Card> cardList = deck.getCards().getCard();
         int index = -1;
         for( int i = 0; i < cardList.size(); i++ ) {
-            if( Utils.equals( card, cardList.get( i ) ) ) {
+            if( CardUtils.equals( card, cardList.get( i ) ) ) {
                 index = i;
+                break;
             }
         }
         if( index == -1 ) {
             return;
         }
         deleteDeck( deck );
-        deck.getCards().getCard().remove( index );
+        deck.getCards().getCard().remove( deck.getCards().getCard().get( index ) );
         writeDeck( deck );
     }
 

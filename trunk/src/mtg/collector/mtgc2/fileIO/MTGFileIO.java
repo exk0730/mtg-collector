@@ -17,7 +17,7 @@ import mtg.collector.xml.org.Card;
  */
 public class MTGFileIO {
 
-    private final File DECKS_FILE = new File( "C:/Users/Eric Kisner/Documents/NetBeansProjects/MTG Collector/src/mtg/collector/xml/decks.xml" );
+    private final File DECKS_FILE = new File( "src/mtg/collector/xml/decks.xml" );
     public List<Deck> curDecksInFile;
     public HashMap<String, JLabel> images;
     public MtgJAXBReader reader = null;

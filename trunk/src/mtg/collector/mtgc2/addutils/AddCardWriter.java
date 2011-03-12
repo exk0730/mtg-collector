@@ -3,8 +3,8 @@ package mtg.collector.mtgc2.addutils;
 import java.util.HashMap;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-import mtg.collector.mtgc2.utilities.Utils;
 import mtg.collector.mtgc2.fileIO.MTGFileIO;
+import mtg.collector.mtgc2.utilities.DeckUtils;
 import mtg.collector.mtgc2.view.AbstractMTGView;
 import mtg.collector.xml.org.Card;
 import mtg.collector.xml.org.Deck;
@@ -45,7 +45,7 @@ public class AddCardWriter {
                 jcb.setSelected( false );
             }
         }
-        deck = Utils.sortDeck( deck );
+        deck = DeckUtils.sortDeck( deck );
         JOptionPane.showMessageDialog( view, (MTGFileIO.instance().writeDeck( deck ) ? deck.getDeckName() + " was written to file."
                                               : deck.getDeckName() + " already exists in file.") );
     }

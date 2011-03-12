@@ -32,13 +32,9 @@
 		<complexType>
 			<sequence>
 				<element name="cardName" type="string" />
-				<element name="cardType" type="string" />
 				<element name="imageLink" type="string" />
-				<element name="manaCost" type="string" />
-				<element name="powerToughness" type="string" />
-				<element name="rarity" type="string" />
 				<element name="quantity" type="int" />
-				<element name="rulesText" type="string"/>
+                                <element name="cardType" type="string" />
 			</sequence>
 		</complexType>
 	</element>

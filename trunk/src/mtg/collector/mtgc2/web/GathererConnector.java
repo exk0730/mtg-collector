@@ -16,7 +16,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 /**
- * This class takes a card name string, and searches the internet for it using
+ * This class takes a card name string, and searches the Internet for it using
  * the database of MTG cards at wizards.com/gatherer.
  * It parses all HTML received based on the search, and is able to return a Card
  * object, which a user can decide to put into their collection (an XML file).
@@ -163,18 +163,12 @@ public class GathererConnector {
         String name = classContents( cardToPrint, ClassTypes.cardTitle, HTMLTags.end_span );
         String imageLink = classContents( cardToPrint, ClassTypes.leftCol, HTMLTags.start_td );
         String type = classContents( cardToPrint, ClassTypes.typeLine, HTMLTags.end_span );
-        String rarity = classContents( cardToPrint, ClassTypes.setVersions, HTMLTags.end_td );
-        String castingCost = classContents( cardToPrint, ClassTypes.manaCost, HTMLTags.end_span );
-        String rulesText = classContents( cardToPrint, ClassTypes.rulesText, HTMLTags.end_div );
         /** Uncomment for testing
         System.out.println("Name:\t" + name);
         System.out.println("Type:\t" + type);
-        System.out.println("Rare:\t" + rarity);
         System.out.println("Image:\t" + imageLink);
-        System.out.println("Cost:\t" + castingCost);
-        System.out.println("Rules:\t" + rulesText);
          */
-        return getCardObjFromHtml( name, type, rarity, imageLink, castingCost, rulesText );
+        return getCardObjFromHtml( name, type, imageLink, "" );
     }
 
     /**
@@ -187,49 +181,30 @@ public class GathererConnector {
     private Card parseSingleCard( String cardToPrint ) {
         String name = idContents( cardToPrint, IdTypes.nameRow, HTMLTags.end_div );
         String type = idContents( cardToPrint, IdTypes.typeRow, HTMLTags.end_div );
-        String rarity = idContents( cardToPrint, IdTypes.rarityRow, HTMLTags.end_div );
         String imageLink = classContents( cardToPrint, ClassTypes.leftCol, HTMLTags.start_td );
-        String castingCost = idContents( cardToPrint, IdTypes.manaRow, HTMLTags.end_div );
-        String rulesText = idContents( cardToPrint, IdTypes.rulesRow, HTMLTags.end_div );
-        String pt = "";
-        if( cardToPrint.contains( IdTypes.ptRow.getIdType() ) ) {
-            pt = idContents( cardToPrint, IdTypes.ptRow, HTMLTags.end_div );
-        } else {
-            pt = null;
-        }
 
         /** Uncomment for testing
         System.out.println("Name:\t" + name);
         System.out.println("Type:\t" + type);
-        System.out.println("Rare:\t" + rarity);
         System.out.println("Image:\t" + imageLink);
-        System.out.println("Cost:\t" + castingCost);
-        System.out.println("Rules:\t" + rulesText);
-        System.out.println("Power/Toughness:\t" + pt);
          */
-        return getCardObjFromHtml( name, type, rarity, imageLink, castingCost, rulesText, pt );
+        return getCardObjFromHtml( name, type, imageLink );
     }
 
     /**
      * Takes portions of HTML code which contain the needed information to create
-     * a card object
+     * a card object. Used for Multi-Card searches.
      * @param name Portion of HTML code which contains the card name
      * @param type Portion of HTML code which contains the card type
-     * @param rarity Portion of HTML code which contains the card rarity
      * @param image Portion of HTML code which contains the card image link
-     * @param cc Portion of HTML code which contains the card casting cost
-     * @param rules Portion of HTML code which contains the rules text
+     * @param garbage Garbage parameter to distinguish between different methods of the same name.
      * @return Card object
      */
-    private Card getCardObjFromHtml( String name, String type, String rarity,
-                                     String image, String cc, String rules ) {
+    private Card getCardObjFromHtml( String name, String type, String image, String garbage ) {
         String cardName = WebParsingUtils.parseCardName( name );
         String cardType = "";
-        String cardRarity = WebParsingUtils.parseRarity( rarity );
         String imageLink = BASE_URL + WebParsingUtils.parseImageLink( image );
         String power_toughness = WebParsingUtils.parsePowerToughness( type );
-        String castingCost = WebParsingUtils.parseCastingCost( cc );
-        String rulesText = WebParsingUtils.parseRulesText( rules );
         if( power_toughness != null ) {
             cardType = WebParsingUtils.parseType( type.replace( power_toughness, "" ) );
         } else {
@@ -240,33 +215,24 @@ public class GathererConnector {
         ret.setCardName( cardName );
         ret.setImageLink( imageLink );
         ret.setCardType( cardType );
-        ret.setRarity( cardRarity );
-        ret.setPowerToughness( power_toughness );
-        ret.setRulesText( rulesText );
-        ret.setManaCost( castingCost );
 
         return ret;
     }
 
-    private Card getCardObjFromHtml( String name, String type, String rarity,
-                                     String image, String cc, String rules,
-                                     String pt ) {
+    /**
+     * Takes portions of HTML code which contain the needed information to create
+     * a card object. Used for Single-Card searches.
+     * @see GathererConnector#getCardObjFromHtml(java.lang.String, java.lang.String, java.lang.String, java.lang.String) 
+     */
+    private Card getCardObjFromHtml( String name, String type, String image ) {
         String cardName = WebParsingUtils.parseSingleCardName( name );
         String cardType = WebParsingUtils.parseSingleType( type );
-        String cardRarity = WebParsingUtils.parseSingleRarity( rarity );
         String imageLink = BASE_URL + WebParsingUtils.parseSingleImageLink( image );
-        String power_toughness = (pt == null) ? null : WebParsingUtils.parseSinglePT( pt );
-        String castingCost = (type.contains( "Land" )) ? "0" : WebParsingUtils.parseSingleCastingCost( cc );
-        String rulesText = WebParsingUtils.parseSingleRulesText( rules );
 
         Card ret = new Card();
         ret.setCardName( cardName );
         ret.setImageLink( imageLink );
         ret.setCardType( cardType );
-        ret.setRarity( cardRarity );
-        ret.setPowerToughness( power_toughness );
-        ret.setRulesText( rulesText );
-        ret.setManaCost( castingCost );
         return ret;
     }
 
@@ -280,10 +246,7 @@ public class GathererConnector {
     private boolean classFound( String line, ClassTypes classType ) {
         String toSearch = HTMLAttributes.htmlclass.getAttribute() + "="
                           + classType.getClassType();
-        if( line.contains( toSearch ) ) {
-            return true;
-        }
-        return false;
+        return( line.contains( toSearch ) );
     }
 
     /**
@@ -299,8 +262,7 @@ public class GathererConnector {
                             + classType.getClassType();
         int classStartLoc = line.indexOf( classStart ) + classStart.length() + 1;
         int endTagLoc = line.indexOf( endTag.getHtmlTag(), classStartLoc );
-        String classText = line.substring( classStartLoc, endTagLoc );
-        return classText;
+        return line.substring( classStartLoc, endTagLoc );
     }
 
     /**
@@ -316,10 +278,11 @@ public class GathererConnector {
      * Akroma, Angel of Wrath</div>
      * </div>
      *
-     * @param idType
-     * @param endTag
+     * @param idType The id type we are looking for. In the above sample input, we would want to find the second-to-last
+     * line which we can then further parse to get the name of the card.
+     * @param endTag Where we should stop searching. In this case, it would be "</div>".
      * @return Example string output:
-     * Akroma, Angel of Wrath
+     * "                  Akroma, Angel of Wrath</div>"
      */
     private String idContents( String line, IdTypes idType, HTMLTags endTag ) {
         final String PADDING = "                    ";
@@ -335,11 +298,17 @@ public class GathererConnector {
     }
 
     /**
-     * If the user searches for a card where its full name may be contained
-     * in other cards, return only the single-named card.
-     * @param cardName
-     * @param cards
-     * @return
+     * If the user searches for a card whose full name may be contained in other card's names, return only the
+     * single-named card, or all cards with the given search name if a single-card does not exist.
+     * @param cardName The card name that the user searched for.
+     * @param cards The cards that were returned by Gatherer search with the given name.
+     * 
+     * @return An array list of Card objects. It will either have a single element, which means that there is
+     * a card that exactly matches the searched name, or it will have multiple Card elements, which means
+     * that there are multiple cards that have the same name contained within the search name.
+     * For example: If I search Akroma - this should return a handful of cards that ALL contain the word "Akroma" in
+     * them. However, if I search for Forest, there may be a lot of cards with the name "Forest" in them, but
+     * there is really only one card that should match this search: the basic-land Forest.
      */
     private ArrayList<Card> checkSingleCardName( String cardName, ArrayList<Card> cards ) {
         ArrayList<Card> ret = new ArrayList<Card>();
